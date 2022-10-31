@@ -1,8 +1,8 @@
-## Requirements
+# Requirements
 
 * docker and docker-compose need to be install on the system
 
-## Clone the repository
+# Clone the repository
 
 ``
 git clone https://github.com/smchandimal/xeneta-ops-task.git
