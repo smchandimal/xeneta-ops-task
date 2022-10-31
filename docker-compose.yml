@@ -14,6 +14,13 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_HOST_AUTH_METHOD=trust
 
+  # Wait for Postgres to be joinable.
+  check-db-started: 
+    image: jwilder/dockerize:0.6.1
+    depends_on:
+      - postgresql
+    command: 'dockerize -wait=tcp://postgresql:5432'
+
   web:
     container_name: apiservice
     image: apiservice:1.0.0
@@ -23,6 +30,6 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - postgresql
+      - check-db-started
     volumes:
       - ./rates:/home/app/rates
