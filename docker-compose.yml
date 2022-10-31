@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+
+  postgresql:
+    image: postgres:13.5-bullseye
+    container_name: postgredb
+    ports:
+      - 5432:5432
+    volumes:
+      - /data:/var/lib/postgresql/data
+      - ./db/rates.sql:/docker-entrypoint-initdb.d/create_tables.sql
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_HOST_AUTH_METHOD=trust
+
+  web:
+    container_name: apiservice
+    image: apiservice:1.0.0
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgresql
+    volumes:
+      - ./rates:/home/app/rates
