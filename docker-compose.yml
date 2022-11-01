@@ -13,13 +13,11 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_HOST_AUTH_METHOD=trust
-
-  # Wait for Postgres to be joinable.
-  check-db-started: 
-    image: jwilder/dockerize:0.6.1
-    depends_on:
-      - postgresql
-    command: 'dockerize -wait=tcp://postgresql:5432'
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://127.0.0.1:3000/rates?date_from=2021-01-01&date_to=2021-01-31&orig_code=CNGGZ&dest_code=EETLL"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
 
   web:
     container_name: apiservice
@@ -29,7 +27,10 @@ services:
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
+    restart: on-failure
     depends_on:
-      - check-db-started
+      - postgresql
+    links: 
+        - postgresql
     volumes:
       - ./rates:/home/app/rates
